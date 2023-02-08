@@ -1,0 +1,19 @@
+[package]
+name = "warp-test"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "3", features = ["derive"] }
+codespan-reporting = "0.11"
+colored = "2"
+junit-report = "0.7"
+parking_lot = "0.12"
+serde = "1"
+serde_yaml = "0.8"
+similar = "2"
+tokio = { version = "1", features = ["full"] }
+warp-default-loader = { path = "../../loaders/default" }
+warp-frontend = { path = "../../frontend", features = ["clap"] }
+warp-interpreter-backend = { path = "../../backends/interpreter" }

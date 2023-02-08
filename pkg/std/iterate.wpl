@@ -1,0 +1,90 @@
+[[no-std]]
+
+use "util.wpl"
+use "fp.wpl"
+use "mutable.wpl"
+use "list.wpl"
+use "loop.wpl"
+
+[help "A container for an iterable value that produces the `next` value on demand."]
+Iterator : Element => type {
+	next :: () -> Maybe Element
+}
+
+[help "Implement this trait to enable traversing your collection type."]
+Iterate : Container Element => trait (Container -> Iterator Element)
+
+Element => instance (Iterate (Iterator Element) Element) : it
+
+-- reduce :: Container Element Result where (Iterate Container Element) => (Element -> Result -> Result) -> Container -> Iterator Result
+-- reduce : TODO
+
+[help "Keep only the items that satisfy the provided condition."]
+filter :: Container Element where (Iterate Container Element) => (Element -> Boolean) -> Container -> Iterator Element
+filter : include? -> container -> {
+	{ next } : Iterate container
+
+	Iterator {
+		next : () -> loop {
+			when (next ()) {
+				Some x ->
+					if (include? x)
+						(Break (Some x))
+						(Continue :: Control-Flow (Maybe _))  -- type annotation is needed because of typechecker bug
+				None -> Break None
+			}
+		}
+	}
+}
+
+[help "Execute a function for each item in an iterator."]
+each :: Container Element where (Iterate Container Element) => (Element -> ()) -> Container -> ()
+each : f -> container -> {
+	{ next } : Iterate container
+
+	loop {
+		when (next ()) {
+			Some x -> {
+				f x
+				(Continue :: Control-Flow ()) -- type annotation is needed because of typechecker bug
+			}
+			None -> Break ()
+		}
+	}
+}
+
+[help "Implement this trait to enable reducing an iterator into your collection type."]
+Collect : Element Container => trait (Iterator Element -> Container)
+
+[help "Collect an iterator into a single value, like a `List`."]
+collect :: Input Element Output where (Iterate Input Element) (Collect Element Output) => Input -> Output
+collect : input -> Collect ((Iterate :: _ -> Iterator Element) input) -- FIXME: Remove type annotation once we have functional dependencies
+
+Element => instance (Collect Element (List Element)) : { next } -> {
+	list : mutable (list ())
+	loop {
+		when (next ()) {
+			Some x -> {
+				list . append! x
+				Continue
+			}
+			None -> Break ()
+		}
+	}
+
+	get list
+}
+
+A => instance (Iterate (List A) A) : list -> {
+	index : mutable 0
+
+	Iterator {
+		next : () -> when (list . nth (get index)) {
+			OK element -> {
+				increment! index
+				Some element
+			}
+			Error _ -> None
+		}
+	}
+}

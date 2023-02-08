@@ -1,0 +1,29 @@
+[package]
+name = "warp-cli"
+version = "0.0.0"
+edition = "2021"
+
+[[bin]]
+name = "warp"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "3", features = ["derive"] }
+codespan-reporting = "0.11"
+indicatif = "0.16"
+line-col = "0.2"
+mktemp = "0.4"
+ouroboros = "0.15"
+parking_lot = "0.12"
+prettyplease = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+subprocess = "0.2"
+syn = "1"
+tokio = { version = "1", features = ["full"] }
+tower-lsp = "0.17"
+which = "4"
+warp-default-loader = { path = "../../loaders/default" }
+warp-frontend = { path = "../../frontend", features = ["clap", "serde"] }
+warp-interpreter-backend = { path = "../../backends/interpreter" }

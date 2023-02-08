@@ -1,0 +1,44 @@
+[[no-std]]
+
+use "iterate.wpl"
+
+Range : N => type {
+	min :: N
+	max :: N
+	step :: N
+}
+
+-- N where (Add N N N) (Order N) (Numeric N) => instance (Iterate (Range N)) : range -> {
+-- 	{ zero } : Numeric
+-- 	range : mutable range
+-- 	{ min max step } : get range
+-- 	current : mutable min
+
+-- 	if? (max < min) {
+-- 		crash "`max` must be greater than `min`"
+-- 	}
+
+-- 	if? (step < zero) {
+-- 		crash "`step` must be positive"
+-- 	}
+
+-- 	Iterator {
+-- 		next : () -> {
+-- 			{ max step } : get range
+
+-- 			if ((get current) >= max) {
+-- 				None
+-- 			} {
+-- 				n : get current
+-- 				current . add! step
+-- 				Some n
+-- 			}
+-- 		}
+-- 	}
+-- }
+
+to : dot operator (min' max' ~> Range {
+	min : min'
+	max : max'
+	step : 1
+})

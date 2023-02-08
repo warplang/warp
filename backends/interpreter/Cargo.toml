@@ -1,0 +1,11 @@
+[package]
+name = "warp-interpreter-backend"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+im = "15"
+itertools = "0.10"
+num-traits = "0.2"
+rust_decimal = { version = "1", features = ["maths"] }
+warp-frontend = { path = "../../frontend" }

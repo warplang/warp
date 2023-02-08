@@ -1,0 +1,14 @@
+code: |
+    Grade : type {
+        A
+        B
+        C
+        D
+        F
+    }
+
+    _ : Grade A
+
+output: |
+
+diagnostics: |

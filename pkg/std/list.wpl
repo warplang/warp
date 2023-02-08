@@ -1,0 +1,86 @@
+[[no-std]]
+
+use "util.wpl"
+use "fp.wpl"
+use "mutable.wpl"
+
+[help "Implementations for the `list` function."]
+[on-unimplemented "lists may only be created from tuples where every value has the same type"]
+Tuple-To-List : Tuple Element => trait (Tuple -> List Element)
+
+tuple-to-list-impl : ty' tuple' ~>
+	(ty' => instance (Tuple-To-List tuple' ty') : tuple -> external "runtime" "make-list" tuple)
+
+tuple-to-list-impl A ()
+tuple-to-list-impl A (A ,)
+tuple-to-list-impl A (A , A)
+tuple-to-list-impl A (A , A , A)
+tuple-to-list-impl A (A , A , A , A)
+tuple-to-list-impl A (A , A , A , A , A)
+tuple-to-list-impl A (A , A , A , A , A , A)
+tuple-to-list-impl A (A , A , A , A , A , A , A)
+tuple-to-list-impl A (A , A , A , A , A , A , A , A)
+tuple-to-list-impl A (A , A , A , A , A , A , A , A , A)
+tuple-to-list-impl A (A , A , A , A , A , A , A , A , A , A)
+
+[help "Create a `List` from a tuple."]
+list :: Tuple Element where (Tuple-To-List Tuple Element) => Tuple -> List Element
+list : Tuple-To-List
+
+[help "Retrieve the first item inside a `List`, if it exists."]
+first :: A => List A -> Maybe A
+first : list -> external "runtime" "list-first" list
+
+[help "Retrieve the last item inside a `List`, if it exists."]
+last :: A => List A -> Maybe A
+last : list -> external "runtime" "list-last" list
+
+[help "Retrieve all but the last item inside a `List`."]
+initial :: A => List A -> Maybe (List A)
+initial : list -> external "runtime" "list-initial" list
+
+[help "Retrieve all but the first item inside a `List`."]
+tail :: A => List A -> Maybe (List A)
+tail : list -> external "runtime" "list-tail" list
+
+Index-Error : type
+
+[help "Retrieve the value in a `List` at a particular index, if it exists."]
+nth :: A => Natural -> List A -> Result A Index-Error
+nth : index -> list -> external "runtime" "list-nth" list index
+
+[help "Add a new item to the end of a `List`."]
+append :: A => A -> List A -> List A
+append : new -> list -> external "runtime" "list-append" list new
+
+[help "Add a new item to the end of a `Mutable List`."]
+append! :: A => A -> Mutable (List A) -> ()
+append! : new -> list -> list . set! (list . get . append new)
+
+[help "Insert a new item at a particular index inside a `List`."]
+insert :: A => Natural -> A -> List A -> Result (List A) Index-Error
+insert : index -> new -> list -> external "runtime" "list-insert" list index new
+
+[help "Insert a new item at a particular index inside a `Mutable List`."]
+insert! :: A => Natural -> A -> Mutable (List A) -> Result () Index-Error
+insert! : index -> new -> list -> when (list . get . insert index new) {
+	OK new-list -> {
+		list . set! new-list
+		OK ()
+	}
+	Error e -> Error e
+}
+
+[help "Remove the item at a particular index inside a `List`."]
+remove :: A => Natural -> List A -> Result (List A) Index-Error
+remove : index -> list -> external "runtime" "list-remove" list index
+
+[help "Remove the item at a particular index inside a `Mutable List`."]
+remove! :: Natural -> Mutable (List _) -> Result () Index-Error
+remove! : index -> list -> when (list . get . remove index) {
+	OK new-list -> {
+		list . set! new-list
+		OK ()
+	}
+	Error e -> Error e
+}

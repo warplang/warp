@@ -1,0 +1,31 @@
+[package]
+name = "warp-playground-runner"
+version = "0.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+debug_playground = ["rust-embed"]
+
+[dependencies]
+anyhow = "1"
+codespan-reporting = "0.11"
+console_error_panic_hook = { version = "0.1.6", optional = true }
+force-send-sync = "1"
+itertools = "0.10"
+js-sys = "0.3"
+lazy_static = "1"
+serde = { version = "1.0", features = ["derive"] }
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = ["Response", "Request", "WorkerGlobalScope"] }
+warp-default-loader = { path = "../../../loaders/default" }
+warp-frontend = { path = "../../../frontend" }
+warp-interpreter-backend = { path = "../../../backends/interpreter" }
+rust-embed = { version = "6", features = ["debug-embed", "interpolate-folder-path"], optional = true }
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-O1']  # FIXME: wasm-opt's inlining-optimizing pass is very slow; -O1 disables it
